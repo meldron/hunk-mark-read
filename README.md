@@ -72,13 +72,14 @@ bun run lint         # lint:fix applies safe fixes
 hunk diff --extension /path/to/hunk-mark-read   # try it in any repo
 ```
 
-The extension targets hunkdiff 0.23.0, extension API 28.
+The extension targets hunkdiff `0.23.0`, extension API `28`.
 
-`src/vendored/sidebar/` is a copy of Hunk's built-in file list from v0.23.0. An extension can replace
+`src/vendored/sidebar/` is a copy of Hunk's built-in file list from `v0.23.0`. An extension can replace
 that list but can't add anything to its rows, so this extension ships a modified copy. The copied
-files are MIT licensed, © Modem Labs Inc., and their license is in the same folder. Every local edit
-has a `mark-read:` comment. After you upgrade Hunk, `bun run vendor:diff [hunk-checkout] [ref]` shows
-the upstream changes to port.
+files are MIT licensed (© Modem Labs Inc.) and their license is in the same folder. Every local edit
+has a `mark-read:` comment.
+
+After you upgrade Hunk, `bun run vendor:diff [hunk-checkout] [ref]` shows the upstream changes to port.
 
 ## License
 
