@@ -207,14 +207,14 @@ describe("mark-read extension", () => {
     expect(ext.visible()).toHaveLength(4);
   });
 
-  test("hiding when everything is read says how to get the files back", async () => {
+  test("hiding when everything is read says so", async () => {
     const ext = loadExtension();
     await ext.load();
     for (const file of ext.files) {
       ext.run("toggle", file.path);
     }
     expect(ext.run("toggle-hidden", "src/a.ts").notes).toContain(
-      "All files read — press H to show",
+      "All files read, read files are hidden",
     );
   });
 });
