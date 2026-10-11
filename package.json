@@ -1,0 +1,34 @@
+{
+  "name": "hunk-mark-read",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mark files as read in Hunk reviews",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "test": "bun test ./src",
+    "typecheck": "tsc --noEmit",
+    "vendor:diff": "bun run scripts/vendor-diff.ts",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix"
+  },
+  "devDependencies": {
+    "@opentui/core": "0.5.14",
+    "@opentui/react": "0.5.14",
+    "@types/bun": "latest",
+    "@types/react": "^19.0.0",
+    "hunkdiff": "0.23.0",
+    "oxfmt": "^0.72.0",
+    "oxlint": "^1.87.0",
+    "react": "^19.0.0",
+    "typescript": "^5.9.0"
+  },
+  "hunk": {
+    "extensions": [
+      "./src/mark-read.tsx"
+    ],
+    "apiVersion": 28
+  }
+}
