@@ -1,5 +1,12 @@
 import { describe, expect, test } from "bun:test";
-import { dimHighlights, isUnderDirectory, nextUnread, progressSpans, readKey } from "./core";
+import {
+  dimHighlights,
+  hiddenNotice,
+  isUnderDirectory,
+  nextUnread,
+  progressSpans,
+  readKey,
+} from "./core";
 
 const PATCH = [
   "diff --git a/src/a.ts b/src/a.ts",
@@ -264,5 +271,25 @@ describe("progressSpans", () => {
 
   test("does not claim an empty review is read", () => {
     expect(progressSpans(0, 0)).toEqual([{ text: "0/0 read", tone: "muted" }]);
+  });
+});
+
+describe("hiddenNotice", () => {
+  test("says nothing when no read file is hidden", () => {
+    expect(hiddenNotice(0, 3, ["H"])).toEqual([]);
+  });
+
+  test("counts hidden files and names the current key", () => {
+    expect(hiddenNotice(3, 2, ["H"])).toEqual(["3 read files hidden", "H to show"]);
+    expect(hiddenNotice(1, 2, ["space", "H"])).toEqual(["1 read file hidden", "space to show"]);
+  });
+
+  test("says all when nothing is left to list", () => {
+    expect(hiddenNotice(4, 0, ["H"])).toEqual(["All 4 read files hidden", "H to show"]);
+    expect(hiddenNotice(1, 0, ["H"])).toEqual(["1 read file hidden", "H to show"]);
+  });
+
+  test("leaves the key out when the command is unbound", () => {
+    expect(hiddenNotice(2, 0, [])).toEqual(["All 2 read files hidden"]);
   });
 });

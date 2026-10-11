@@ -8,15 +8,23 @@ import type {
   ExtensionStatusLineControls,
   HunkExtensionAPI,
 } from "hunkdiff/extension";
-import { dimHighlights, isUnderDirectory, nextUnread, progressSpans } from "./core";
+import { dimHighlights, hiddenNotice, isUnderDirectory, nextUnread, progressSpans } from "./core";
 import { defaultSessionDir, SessionLog } from "./sessionLog";
 import { MarkReadStore } from "./store";
 import { FlexFileSidebar, type SidebarReadState } from "./vendored/sidebar/FileSidebars";
-import { formatTerminalPath } from "./vendored/sidebar/helpers";
+import { fitText, formatTerminalPath } from "./vendored/sidebar/helpers";
 
 const HIGHLIGHTER_ID = "dim";
 const STATUS_ID = "progress";
 const ALL_READ_HIDDEN = "All files read, read files are hidden";
+/**
+ * Full id of the hide/show command, for looking up its current keys.
+ *
+ * Hunk names the extension after its folder or repository and does not tell the
+ * extension that name. Installed under another name, the lookup finds no keys
+ * and the sidebar leaves the key out.
+ */
+const TOGGLE_HIDDEN = "hunk-mark-read.toggle-hidden";
 
 export interface MarkReadOptions {
   /** Where session files live; defaults to `defaultSessionDir()`. */
@@ -168,7 +176,53 @@ export function registerMarkRead(hunk: HunkExtensionAPI, options: MarkReadOption
       };
     }, [files, snapshot]);
 
-    return <FlexFileSidebar {...props} readState={readState} />;
+    const { theme, width } = props;
+    const notice = snapshot.hidden
+      ? hiddenNotice(store.readCount(), files.length, props.keybindings.getKeys(TOGGLE_HIDDEN))
+      : [];
+    // One column of row highlight on each side, as in the file rows.
+    const noticeRows = notice.map((line) => (
+      <text key={line} fg={theme.muted} bg={theme.panel}>
+        {" " + fitText(line, Math.max(0, width - 2), "…")}
+      </text>
+    ));
+
+    if (files.length === 0 && notice.length > 0) {
+      // Nothing left to list: say why where the list would be.
+      return (
+        <box
+          style={{
+            width: "100%",
+            height: "100%",
+            flexDirection: "column",
+            backgroundColor: theme.panel,
+          }}
+        >
+          {noticeRows}
+        </box>
+      );
+    }
+
+    return (
+      <box
+        style={{
+          width: "100%",
+          height: "100%",
+          flexDirection: "column",
+          backgroundColor: theme.panel,
+        }}
+      >
+        <box style={{ width: "100%", flexGrow: 1, flexShrink: 1, minHeight: 0 }}>
+          <FlexFileSidebar {...props} readState={readState} />
+        </box>
+        {notice.length > 0 ? (
+          <text fg={theme.border} bg={theme.panel}>
+            {"─".repeat(Math.max(0, width))}
+          </text>
+        ) : null}
+        {noticeRows}
+      </box>
+    );
   }
 
   try {

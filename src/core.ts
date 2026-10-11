@@ -194,3 +194,26 @@ export function progressSpans(read: number, total: number): ExtensionStatusSpan[
   }
   return [{ text: `${read}/${total} read`, tone: "muted" }];
 }
+
+/**
+ * Sidebar text about read files that `H` removed from the review.
+ *
+ * `visible` is how many files the sidebar still lists; with none left the text
+ * replaces the empty list. `keys` are the toggle command's current bindings, so
+ * a remapped or unbound command never advertises a dead key.
+ */
+export function hiddenNotice(hidden: number, visible: number, keys: readonly string[]): string[] {
+  if (hidden <= 0) {
+    return [];
+  }
+  const files = hidden === 1 ? "file" : "files";
+  const lines = [
+    visible === 0 && hidden > 1
+      ? `All ${hidden} read files hidden`
+      : `${hidden} read ${files} hidden`,
+  ];
+  if (keys[0]) {
+    lines.push(`${keys[0]} to show`);
+  }
+  return lines;
+}
